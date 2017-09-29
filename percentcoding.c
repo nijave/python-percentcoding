@@ -112,4 +112,3 @@ size_t btox(register uint8_t c, register char* s, register char a)
 
   return pos;
 }
-

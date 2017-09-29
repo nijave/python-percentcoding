@@ -1,5 +1,5 @@
-#include "codec.h"
 #include "Python.h"
+#include "codec.h"
 #include "percentcoding.h"
 
 
@@ -67,12 +67,12 @@ Codec_encode(Codec *self, PyObject *args)
 
   size = percent_encode(in, inlen, NULL, self->chrtohex);
 
-  if (!(result = PyString_FromStringAndSize(NULL,size)))
+  if (!(result = PyUnicode_FromStringAndSize(NULL,size)))
     goto done;
 
   /* Second pass: actually encode this time. */
 
-  out = PyString_AsString(result);
+  out = PyUnicode_AsUTF8(result);
   size = percent_encode(in, inlen, out, self->chrtohex);
 
 done:
@@ -99,12 +99,12 @@ Codec_decode(Codec *self, PyObject *args)
 
   size = percent_decode(in, inlen, NULL);
 
-  if (!(result = PyString_FromStringAndSize(NULL,size)))
+  if (!(result = PyUnicode_FromStringAndSize(NULL,size)))
     return NULL;
 
   /* Second pass: actually decode this time. */
 
-  out = PyString_AsString(result);
+  out = PyUnicode_AsUTF8(result);
   size = percent_decode(in, inlen, out);
 
   return result;
@@ -166,4 +166,3 @@ PyTypeObject CodecType = {
   0,                            /*tp_free*/
   0,                            /*tp_is_gc*/
 };
-

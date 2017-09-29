@@ -46,4 +46,3 @@ setup(
   classifiers = filter(None, classifiers.split("\n")),
   long_description = "\n".join(doclines[2:]),
 )
-

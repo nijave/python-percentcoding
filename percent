@@ -63,4 +63,3 @@ else:
 
 for line in fin:
   print f(line),
-
