@@ -24,7 +24,7 @@ Codec_init(Codec *self, PyObject *args, PyObject *kwds)
   const char* safeset = NULL;
   int len = 0;
 
-  if (!PyArg_ParseTuple(args, "s#|c:init", &safeset, &len, &a))
+  if (!PyArg_ParseTuple(args, "s#|C:init", &safeset, &len, &a))
     return -1;
 
   /* Initialize the byte -> 2 hex char lookup table.
@@ -52,10 +52,6 @@ Codec_encode(Codec *self, PyObject *args)
   int inlen = 0;
   PyObject *result = NULL;
 
-  /* Make sure we can handle unicode string inputs.
-     The encoded result will always be a plain ascii string.
-     FIXME not true -- eg what if safe set has 0xff */
-
   if (!PyArg_ParseTuple(args, "et#:encode", "utf8", &in, &inlen))
     goto done;
 
@@ -67,7 +63,7 @@ Codec_encode(Codec *self, PyObject *args)
 
   size = percent_encode(in, inlen, NULL, self->chrtohex);
 
-  if (!(result = PyUnicode_FromStringAndSize(NULL,size)))
+  if (!(result = PyUnicode_New(size, 0)))
     goto done;
 
   /* Second pass: actually encode this time. */
@@ -75,9 +71,9 @@ Codec_encode(Codec *self, PyObject *args)
   out = PyUnicode_AsUTF8(result);
   size = percent_encode(in, inlen, out, self->chrtohex);
 
-done:
-  if (in) PyMem_Free(in);
-  return result;
+  done:
+    if (in) PyMem_Free(in);
+    return result;
 }
 
 
@@ -99,7 +95,7 @@ Codec_decode(Codec *self, PyObject *args)
 
   size = percent_decode(in, inlen, NULL);
 
-  if (!(result = PyUnicode_FromStringAndSize(NULL,size)))
+  if (!(result = PyUnicode_New(size, 0)))
     return NULL;
 
   /* Second pass: actually decode this time. */
@@ -112,19 +108,16 @@ Codec_decode(Codec *self, PyObject *args)
 
 
 static PyMethodDef Codec_methods[] = {
-  {"encode",  (PyCFunction)Codec_encode,  METH_VARARGS,
-    PyDoc_STR("encode(str) -> str")},
-  {"decode",  (PyCFunction)Codec_decode,  METH_VARARGS,
-    PyDoc_STR("decode(str) -> str")},
-  {NULL,    NULL}    /* sentinel */
+  {"encode",  (PyCFunction)Codec_encode,  METH_VARARGS, PyDoc_STR("encode(str) -> str")},
+  {"decode",  (PyCFunction)Codec_decode,  METH_VARARGS, PyDoc_STR("decode(str) -> str")},
+  {NULL, NULL}    /* sentinel */
 };
 
 
 PyTypeObject CodecType = {
   /* The ob_type field must be initialized in the module init function
    * to be portable to Windows without using C++. */
-  PyObject_HEAD_INIT(NULL)
-  0,                            /*ob_size*/
+  PyVarObject_HEAD_INIT(NULL, 0)
   "percentcoding.cext.Codec",   /*tp_name*/
   sizeof(Codec),                /*tp_basicsize*/
   0,                            /*tp_itemsize*/

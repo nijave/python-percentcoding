@@ -23,7 +23,7 @@ class FunctionTestCase(unittest.TestCase):
     return self.name
 
 
-URI_UNRESERVED = string.uppercase + string.lowercase + string.digits + "-_.~"
+URI_UNRESERVED = string.ascii_uppercase + string.ascii_lowercase + string.digits + "-_.~"
 URI_RESERVED = "!*'();:@&=+$,/?#[]"
 URI_SAFE = ''.join( set([c for c in URI_UNRESERVED]) - set([c for c in URI_RESERVED]) )
 

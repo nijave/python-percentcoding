@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from percentcoding.cext import *
 import string
+from percentcoding.cext import Codec
 
-URI_UNRESERVED = string.uppercase + string.lowercase + string.digits + "-_.~"
+URI_UNRESERVED = string.ascii_uppercase + string.ascii_lowercase + string.digits + "-_.~"
 URI_RESERVED = "!*'();:@&=+$,/?#[]"
 URI_SAFE = ''.join( set([c for c in URI_UNRESERVED]) - set([c for c in URI_RESERVED]) )
 URI_SAFE_FORM = URI_SAFE+'+'
