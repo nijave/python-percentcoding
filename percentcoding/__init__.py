@@ -15,6 +15,11 @@ def quote(s):
   global urlcoding
   return urlcoding.encode(s)
 
+def quote_default(s, default='-'):
+  if s is None:
+    return default
+  return quote(s)
+
 def unquote(s):
   global urlcoding
   return urlcoding.decode(s)
