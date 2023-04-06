@@ -22,7 +22,7 @@ doclines = __doc__.split("\n")
 
 setup(
   name='percentcoding',
-  version='0.2',
+  version='0.3',
   ext_modules=[
     Extension(
       'percentcoding.cext',
@@ -31,7 +31,6 @@ setup(
         'module.c',
         'percentcoding.c',
       ],
-      extra_compile_args=['-fPIC'],
       define_macros=[],
     ),
   ],

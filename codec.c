@@ -1,3 +1,5 @@
+#define PY_SSIZE_T_CLEAN
+
 #include "Python.h"
 #include "codec.h"
 #include "percentcoding.h"
@@ -9,7 +11,7 @@ static PyObject *
 Codec_new(PyTypeObject *type, PyObject *arg, PyObject *kwds)
 {
   Codec *self;
-  
+
   if (!(self = (Codec*)type->tp_alloc(type, 0)))
     return NULL;
 
@@ -22,16 +24,16 @@ Codec_init(Codec *self, PyObject *args, PyObject *kwds)
 {
   char a = 'a';
   const char* safeset = NULL;
-  int len = 0;
+  Py_ssize_t len = 0;
 
-  if (!PyArg_ParseTuple(args, "s#|C:init", &safeset, &len, &a))
+  if (!PyArg_ParseTuple(args, "s#|:init", &safeset, &len))
     return -1;
 
   /* Initialize the byte -> 2 hex char lookup table.
      By default, everything is "unsafe" and gets percent encoded.
      Anything in safeset is okay.
      The percent character itself is never safe. */
-  
+
   unsigned int i;
   for (i=0; i<256; i++)
     btox((uint8_t)i, &self->chrtohex[(uint8_t)i*2], a);
@@ -49,7 +51,7 @@ static PyObject *
 Codec_encode(Codec *self, PyObject *args)
 {
   char* in = NULL;
-  int inlen = 0;
+  Py_ssize_t inlen = 0;
   PyObject *result = NULL;
 
   if (!PyArg_ParseTuple(args, "et#:encode", "utf8", &in, &inlen))
@@ -81,7 +83,7 @@ static PyObject *
 Codec_decode(Codec *self, PyObject *args)
 {
   const char* in = NULL;
-  int inlen = 0;
+  Py_ssize_t inlen = 0;
 
   if (!PyArg_ParseTuple(args, "s#:decode", &in, &inlen))
     return NULL;
@@ -153,7 +155,7 @@ PyTypeObject CodecType = {
   0,                            /*tp_descr_get*/
   0,                            /*tp_descr_set*/
   0,                            /*tp_dictoffset*/
-  (initproc)Codec_init,         /*tp_init*/
+  Codec_init,                   /*tp_init*/
   0,                            /*tp_alloc*/
   Codec_new,                    /*tp_new*/
   0,                            /*tp_free*/
